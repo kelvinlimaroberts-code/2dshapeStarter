@@ -24,6 +24,32 @@ ID3D11VertexShader* pVertexShader = nullptr;	//vertex buffer D3D object
 ID3D11PixelShader* pPixelShader = nullptr;		//pixel shader D3D object
 
 
+//verticis messing
+
+constexpr int numVertShape1 = 4;
+VertexPosColour shape1[numVertShape1] =
+{
+	{ Vector3(-0.05f, -0.05f, 0.f), Colors::White   },
+	{ Vector3(-0.05f, +0.05f, 0.f), Colors::Black },
+	{ Vector3(+0.05f, +0.05f, 0.f), Colors::Red },
+	{ Vector3(+0.05f, -0.05f, 0.f), Colors::Green }
+};
+
+constexpr int numVertShape2 = 8;
+float offset1 = 0.5f;
+float offset2 = 0.3f;
+VertexPosColour shape2[numVertShape2] =
+{
+	{ Vector3(-0.5f, -0.5f, 0.f), Colors::White   },
+	{ Vector3(-0.5f, +0.5f, 0.f), Colors::Black },
+	{ Vector3(+0.5f, +0.5f, 0.f), Colors::Red },
+	{ Vector3(+0.5f, -0.5f, 0.f), Colors::Green },
+	{ Vector3(-0.4f, -0.4f, 0.f), Colors::White   },
+	{ Vector3(-0.4f, +0.4f, 0.f), Colors::Black },
+	{ Vector3(+0.4f, +0.4f, 0.f), Colors::Red },
+	{ Vector3(+0.4f, -0.4f, 0.f), Colors::Green }
+};
+
 
 /*
 * create the geometry needed for a sprite - a two trangle quad
@@ -32,25 +58,21 @@ void BuildGeometryBuffers()
 {
 	MyD3D& d3d = WinUtil::Get().GetD3D();
 	// Create vertex buffer for a quad (two triangle square)
-	VertexPosColour vertices[] =
-	{
-		{ Vector3(-0.5f, -0.5f, 0.f), Colors::White   },
-		{ Vector3(-0.5f, +0.5f, 0.f), Colors::Black },
-		{ Vector3(+0.5f, +0.5f, 0.f), Colors::Red },
-		{ Vector3(+0.5f, -0.5f, 0.f), Colors::Green }
-	};
-	CreateVertexBuffer(d3d.GetDevice(),sizeof(VertexPosColour) * 4, vertices, gBoxVB);
+	
 
-
+	CreateVertexBuffer(d3d.GetDevice(),sizeof(VertexPosColour) * 4, shape2, gBoxVB);
 	// Create the index buffer
 
-	UINT indices[] = {
+	constexpr static int amountIndicies = 12;
+	UINT indices[amountIndicies] = {
 		// front face
 		0, 1, 2,
-		0, 2, 3
+		0, 2, 3,
+		4, 5, 6,
+		4, 6, 7
 	};
 
-	CreateIndexBuffer(d3d.GetDevice(), sizeof(UINT) * 6, indices, gBoxIB);
+	CreateIndexBuffer(d3d.GetDevice(), sizeof(UINT) * amountIndicies, indices, gBoxIB);
 }
 
 
@@ -82,6 +104,21 @@ bool BuildFX()
 }
 
 
+void Translate()
+{
+	for (size_t i = 0; i < numVertShape1; i++)
+	{
+		shape1[i].Pos.x += 0.00001;
+	}
+}
+void Scale()
+{
+	for (size_t i = 0; i < numVertShape1; i++)
+	{
+		shape1[i].Pos = Vector3(shape1[i].Pos.x * 1.0001, shape1[i].Pos.y * 1.0001, 0);
+	}
+}
+
 //one time initialisation
 void InitGame()
 {
@@ -105,6 +142,10 @@ void ReleaseGame()
 */
 void Update(float dTime)
 {
+	//Translate();
+	//Scale();
+	BuildGeometryBuffers();  //should really be doin this but whatever
+
 }
 
 /*
