@@ -1,0 +1,199 @@
+//system libraries
+#include <windows.h>
+#include <string>
+#include <cassert>
+#include <d3d11.h>
+#include <vector>
+
+//our libraries
+#include "WindowUtils.h"
+#include "D3D.h"
+#include "Sprite.h"
+#include "ShaderTypes.h"
+#include "FX.h"
+
+using namespace std;					//open the standard template library
+using namespace DirectX;				//DirectX library
+using namespace DirectX::SimpleMath;	//the maths part of the library
+
+
+ID3D11InputLayout* gInputLayout;				//vertex description D3D object
+ID3D11Buffer* gBoxVB;							//vertex buffer D3D object for the sprite 
+ID3D11Buffer* gBoxIB;							//index buffer D3D object for the sprite
+ID3D11VertexShader* pVertexShader = nullptr;	//vertex buffer D3D object
+ID3D11PixelShader* pPixelShader = nullptr;		//pixel shader D3D object
+
+
+
+/*
+* create the geometry needed for a sprite - a two trangle quad
+*/
+void BuildGeometryBuffers()
+{
+	MyD3D& d3d = WinUtil::Get().GetD3D();
+	// Create vertex buffer for a quad (two triangle square)
+	VertexPosColour vertices[] =
+	{
+		{ Vector3(-0.5f, -0.5f, 0.f), Colors::White   },
+		{ Vector3(-0.5f, +0.5f, 0.f), Colors::Black },
+		{ Vector3(+0.5f, +0.5f, 0.f), Colors::Red },
+		{ Vector3(+0.5f, -0.5f, 0.f), Colors::Green }
+	};
+	CreateVertexBuffer(d3d.GetDevice(),sizeof(VertexPosColour) * 4, vertices, gBoxVB);
+
+
+	// Create the index buffer
+
+	UINT indices[] = {
+		// front face
+		0, 1, 2,
+		0, 2, 3
+	};
+
+	CreateIndexBuffer(d3d.GetDevice(), sizeof(UINT) * 6, indices, gBoxIB);
+}
+
+
+/*
+* Setup geometry and shaders, everything the gpu needs to render primtives
+*/
+bool BuildFX()
+{
+	MyD3D& d3d = WinUtil::Get().GetD3D();
+	CheckShaderModel5Supported(d3d.GetDevice());
+
+	//load in a pre-compiled vertex shader
+	char* pBuff = nullptr;
+	unsigned int bytes = 0;
+	pBuff = ReadAndAllocate("../bin/data/SimpleVS.cso", bytes);
+	CreateVertexShader(d3d.GetDevice(),pBuff, bytes, pVertexShader);
+	//create a link between our data and the vertex shader
+	CreateInputLayout(d3d.GetDevice(),VertexPosColour::sVertexDesc, 2, pBuff, bytes, &gInputLayout);
+	delete[] pBuff;
+
+	//load in a pre-compiled pixel shader	
+	pBuff = ReadAndAllocate("../bin/data/SimplePS.cso", bytes);
+	CreatePixelShader(d3d.GetDevice(),pBuff, bytes, pPixelShader);
+	delete[] pBuff;
+
+
+	return true;
+
+}
+
+
+//one time initialisation
+void InitGame()
+{
+	BuildGeometryBuffers();
+	BuildFX();
+}
+
+//one time release of all D3D objects
+void ReleaseGame()
+{
+	ReleaseCOM(pVertexShader);
+	ReleaseCOM(pPixelShader);
+	ReleaseCOM(gBoxVB);
+	ReleaseCOM(gBoxIB);
+	ReleaseCOM(gInputLayout);
+}
+
+/*
+* run once per update as fast as possible, do all logical updates
+* dTime - elapsed time since last call to Update
+*/
+void Update(float dTime)
+{
+}
+
+/*
+* Take the logical representation, updated previously, render it on the screen
+*/
+void Render()
+{
+	MyD3D& d3d = WinUtil::Get().GetD3D();
+	d3d.BeginRender(Vector4(0, 0, 0, 1));	//clear the back buffer for rendering
+
+	d3d.InitInputAssembler(gInputLayout, gBoxVB, sizeof(VertexPosColour), gBoxIB);	//activate a vertex description, index+vertex buffer loaded previously
+	d3d.GetDeviceCtx().VSSetShader(pVertexShader, nullptr, 0);	//activate a vertex shader
+	d3d.GetDeviceCtx().PSSetShader(pPixelShader, nullptr, 0);	//activate a pixel shader
+	d3d.GetDeviceCtx().DrawIndexed(6, 0, 0);	//draw 6 indices, each triplet refers to one triangle
+
+
+	d3d.EndRender();	//swap front and back buffers when gpu is ready
+}
+
+
+//if ALT+ENTER or resize or drag window we might want do
+//something like pause the game perhaps, but we definitely
+//need to let D3D know what's happened (OnResize_Default).
+void OnResize(int screenWidth, int screenHeight, MyD3D& d3d)
+{
+	d3d.OnResize_Default(screenWidth, screenHeight);	
+}
+
+//messages come from windows all the time, should we respond to any specific ones?
+LRESULT CALLBACK MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	//do something game specific here
+	switch (msg)
+	{
+		// Respond to a keyboard event.
+	case WM_CHAR:
+		switch (wParam)
+		{
+		case 27:
+		case 'q':
+		case 'Q':
+			PostQuitMessage(0); //exit request
+			break;
+		}
+	case WM_INPUT:
+		break;
+	}
+
+	//default message handling (resize window, full screen, etc)
+	return WinUtil::DefaultMssgHandler(hwnd, msg, wParam, lParam);
+}
+
+//main entry point for the game
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
+				   PSTR cmdLine, int showCmd)
+{
+	//start a new window using the operating system
+	int w(512), h(256);
+	//int defaults[] = { 640,480, 800,600, 1024,768, 1280,1024 }; //clue to a more sophisticated way to choose resolution at a specific aspect ratio
+		//WinUtil::ChooseRes(w, h, defaults, 4);
+	if (!WinUtil::Get().InitMainWindow(w, h, hInstance, "Fezzy", MainWndProc, true))
+		assert(false);
+
+	//setup D3D
+	MyD3D d3d;
+	if (!d3d.InitDirect3D(OnResize))
+		assert(false);
+	WinUtil::Get().SetD3D(d3d);
+	d3d.GetCache().SetAssetPath("data/");
+
+	//initialise any game related memory
+	InitGame();
+
+	//call update+render as fast as you can 
+	bool canUpdateRender;
+	float dTime = 0;
+	while (WinUtil::Get().BeginLoop(canUpdateRender))
+	{
+		if (canUpdateRender && dTime>0)
+		{
+			Update(dTime);
+			Render();
+		}
+		//time how long one loop takes
+		dTime = WinUtil::Get().EndLoop(canUpdateRender);
+	}
+
+	//game over
+	d3d.ReleaseD3D(true);	
+	return 0;
+}
+
