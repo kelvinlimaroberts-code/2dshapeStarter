@@ -40,14 +40,14 @@ float offset1 = 0.5f;
 float offset2 = 0.3f;
 VertexPosColour shape2[numVertShape2] =
 {
-	{ Vector3(-0.5f, -0.5f, 0.f), Colors::White   },
-	{ Vector3(-0.5f, +0.5f, 0.f), Colors::Black },
-	{ Vector3(+0.5f, +0.5f, 0.f), Colors::Red },
-	{ Vector3(+0.5f, -0.5f, 0.f), Colors::Green },
-	{ Vector3(-0.4f, -0.4f, 0.f), Colors::White   },
-	{ Vector3(-0.4f, +0.4f, 0.f), Colors::Black },
-	{ Vector3(+0.4f, +0.4f, 0.f), Colors::Red },
-	{ Vector3(+0.4f, -0.4f, 0.f), Colors::Green }
+	{ Vector3(-offset1, -offset1, 0.f), Colors::Red   },
+	{ Vector3(-offset1, +offset1, 0.f), Colors::Red },
+	{ Vector3(+offset1, +offset1, 0.f), Colors::Red },
+	{ Vector3(+offset1, -offset1, 0.f), Colors::Red },
+	{ Vector3(-offset2, -offset2, 0.f), Colors::Green   },
+	{ Vector3(-offset2, +offset2, 0.f), Colors::Green },
+	{ Vector3(+offset2, +offset2, 0.f), Colors::Green },
+	{ Vector3(+offset2, -offset2, 0.f), Colors::Green }
 };
 
 
