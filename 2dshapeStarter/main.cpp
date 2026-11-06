@@ -25,9 +25,31 @@ ID3D11PixelShader* pPixelShader = nullptr;		//pixel shader D3D object
 
 
 //verticis messing
+class Shape
+{
+private:
+	const int numVert;
+public:
+	VertexPosColour* Verts;
+	Shape(int amountVerts);
+	~Shape();
+	void test();
+};
+
+Shape::Shape(int amountVerts) : numVert(amountVerts)
+{
+	Verts = new VertexPosColour[amountVerts];
+
+}
+
+Shape::~Shape()
+{
+	delete[] Verts;
+	Verts = nullptr;
+}
 
 constexpr int numVertShape1 = 4;
-VertexPosColour shape1[numVertShape1] =
+VertexPosColour shape1[] =
 {
 	{ Vector3(-0.05f, -0.05f, 0.f), Colors::White   },
 	{ Vector3(-0.05f, +0.05f, 0.f), Colors::Black },
@@ -104,11 +126,15 @@ bool BuildFX()
 }
 
 
-void Translate()
+void TranslateInRunTime(Vector3 moveVec, float elapsed)
 {
 	for (size_t i = 0; i < numVertShape1; i++)
 	{
-		shape1[i].Pos.x += 0.00001;
+		shape1[i].Pos.x += moveVec.x * elapsed;
+		shape1[i].Pos.y += moveVec.y * elapsed;
+		shape1[i].Pos.z += moveVec.z * elapsed;
+
+
 	}
 }
 void Scale()
@@ -142,7 +168,7 @@ void ReleaseGame()
 */
 void Update(float dTime)
 {
-	//Translate();
+	TranslateInRunTime({ 1,1,0 }, dTime);
 	//Scale();
 	BuildGeometryBuffers();  //should really be doin this but whatever
 
