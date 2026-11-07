@@ -1,16 +1,5 @@
-//system libraries
-#include <windows.h>
-#include <string>
-#include <cassert>
-#include <d3d11.h>
-#include <vector>
 
-//our libraries
-#include "WindowUtils.h"
-#include "D3D.h"
-#include "Sprite.h"
 #include "Shape.h"
-#include "FX.h"
 
 using namespace std;					//open the standard template library
 using namespace DirectX;				//DirectX library
