@@ -102,6 +102,7 @@
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ShaderTypes.cpp" />
+    <ClCompile Include="Shape.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="TexCache.cpp" />
     <ClCompile Include="WindowUtils.cpp" />
@@ -112,6 +113,7 @@
     <ClInclude Include="FX.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="ShaderTypes.h" />
+    <ClInclude Include="Shape.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="TexCache.h" />
     <ClInclude Include="WindowUtils.h" />

@@ -9,7 +9,7 @@
 #include "WindowUtils.h"
 #include "D3D.h"
 #include "Sprite.h"
-#include "ShaderTypes.h"
+#include "Shape.h"
 #include "FX.h"
 
 using namespace std;					//open the standard template library
@@ -24,29 +24,7 @@ ID3D11VertexShader* pVertexShader = nullptr;	//vertex buffer D3D object
 ID3D11PixelShader* pPixelShader = nullptr;		//pixel shader D3D object
 
 
-//verticis messing
-class Shape
-{
-private:
-	const int numVert;
-public:
-	VertexPosColour* Verts;
-	Shape(int amountVerts);
-	~Shape();
-	void test();
-};
 
-Shape::Shape(int amountVerts) : numVert(amountVerts)
-{
-	Verts = new VertexPosColour[amountVerts];
-
-}
-
-Shape::~Shape()
-{
-	delete[] Verts;
-	Verts = nullptr;
-}
 
 constexpr int numVertShape1 = 4;
 VertexPosColour shape1[] =
