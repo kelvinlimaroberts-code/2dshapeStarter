@@ -13,31 +13,39 @@ ID3D11VertexShader* pVertexShader = nullptr;	//vertex buffer D3D object
 ID3D11PixelShader* pPixelShader = nullptr;		//pixel shader D3D object
 
 
-
+constexpr float offset1 = 0.5f;
+constexpr float offset2 = 0.4f;
+constexpr float offset3 = 0.1f;
 
 constexpr int numVertShape1 = 4;
 VertexPosColour shape1[] =
 {
-	{ Vector3(-0.05f, -0.05f, 0.f), Colors::White   },
-	{ Vector3(-0.05f, +0.05f, 0.f), Colors::Black },
-	{ Vector3(+0.05f, +0.05f, 0.f), Colors::Red },
-	{ Vector3(+0.05f, -0.05f, 0.f), Colors::Green }
+	{ Vector3(-0.5f, -0.5f, 0.f), Colors::White   },
+	{ Vector3(-0.5f, +0.5f, 0.f), Colors::Black },
+	{ Vector3(+0.5f, +0.5f, 0.f), Colors::Red },
+	{ Vector3(+0.5f, -0.5f, 0.f), Colors::Green }
 };
 
-constexpr int numVertShape2 = 8;
-float offset1 = 0.5f;
-float offset2 = 0.3f;
+constexpr int numVertShape2 = 12;
 VertexPosColour shape2[numVertShape2] =
 {
-	{ Vector3(-offset1, -offset1, 0.f), Colors::Red   },
-	{ Vector3(-offset1, +offset1, 0.f), Colors::Red },
-	{ Vector3(+offset1, +offset1, 0.f), Colors::Red },
-	{ Vector3(+offset1, -offset1, 0.f), Colors::Red },
-	{ Vector3(-offset2, -offset2, 0.f), Colors::Green   },
-	{ Vector3(-offset2, +offset2, 0.f), Colors::Green },
-	{ Vector3(+offset2, +offset2, 0.f), Colors::Green },
-	{ Vector3(+offset2, -offset2, 0.f), Colors::Green }
+	{ Vector3(-offset1, offset2 , 0.f), Colors::Purple   },					//0
+	{ Vector3(-offset2, offset1, 0.f), Colors::DodgerBlue   },				//1
+	{ Vector3(0.f, offset3, 0.f), Colors::LawnGreen },						//2
+	{ Vector3(offset2, offset1, 0.f), Colors::LightGoldenrodYellow},		//3
+	{ Vector3(offset1, offset2 , 0.f), Colors::Orange   },					//4
+	{ Vector3(offset3, 0.f, 0.f), Colors::Red   },							//5
+	{ Vector3(offset1, -offset2, 0.f), Colors::Red   },						//6
+	{ Vector3(offset2, -offset1 , 0.f), Colors::Red   },					//7
+	{ Vector3(0.f, -offset3 , 0.f), Colors::Red   },						//8
+	{ Vector3(-offset2, -offset1, 0.f), Colors::Red   },					//9
+	{ Vector3(-offset1, -offset2 , 0.f), Colors::PeachPuff},				//10
+	{ Vector3(-offset3, 0.0f, 0.f), Colors::Red   },						//11
 };
+
+
+
+
 
 
 /*
@@ -49,16 +57,28 @@ void BuildGeometryBuffers()
 	// Create vertex buffer for a quad (two triangle square)
 	
 
-	CreateVertexBuffer(d3d.GetDevice(),sizeof(VertexPosColour) * 4, shape2, gBoxVB);
+	CreateVertexBuffer(d3d.GetDevice(),sizeof(VertexPosColour) * numVertShape2, shape2, gBoxVB);
 	// Create the index buffer
 
-	constexpr static int amountIndicies = 12;
+
+
+
+	//constexpr static int amountIndicies = 6;
+	//UINT indices[amountIndicies] = {
+	//	// front face
+	//	0,1,2,
+	//	0,2,3
+	//};
+
+	constexpr static int amountIndicies = 18;      //SHAPE 2
 	UINT indices[amountIndicies] = {
 		// front face
-		0, 1, 2,
-		0, 2, 3,
-		4, 5, 6,
-		4, 6, 7
+		1,2,11,
+		1,11,0,
+		3,9,10,
+		3,4,9,
+		5,7,8,
+		5,6,7
 	};
 
 	CreateIndexBuffer(d3d.GetDevice(), sizeof(UINT) * amountIndicies, indices, gBoxIB);
@@ -135,7 +155,7 @@ void ReleaseGame()
 */
 void Update(float dTime)
 {
-	TranslateInRunTime({ 1,1,0 }, dTime);
+	//TranslateInRunTime({ 1,1,0 }, dTime);
 	//Scale();
 	BuildGeometryBuffers();  //should really be doin this but whatever
 
